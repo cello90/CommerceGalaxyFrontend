@@ -8,6 +8,7 @@ const HQ: React.FC = () => {
   useEffect(() => {
     // Retrieve the auth token from the cookie
     const token = Cookies.get('authToken');
+    const userID = Cookies.get('userID');
     if (token) {
       console.log('Auth token found:', token);
       setAuthToken(token);

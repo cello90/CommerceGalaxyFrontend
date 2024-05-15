@@ -37,6 +37,7 @@ const Login: React.FC = () => {
         
         // Save the auth token in a cookie
         Cookies.set('authToken', result.access_token, { expires: 7 }); // Expires in 7 days
+        Cookies.set('userID', result.id, { expires: 7 }); // Expires in 7 days
 
         reset();
         router.push('/hq'); // Navigate to dashboard after successful login
