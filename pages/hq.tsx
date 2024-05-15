@@ -17,6 +17,7 @@ type Base = {
 
 const HQ: React.FC = () => {
   const [authToken, setAuthToken] = useState<string | null>(null);
+  const [userID, setUserID] = useState<string | null>(null);
   const [requestMessage, setRequestMessage] = useState<string | null>(null);
   const [bases, setBases] = useState<Base[]>([]);
   const [editingBase, setEditingBase] = useState<string | null>(null);
@@ -25,9 +26,11 @@ const HQ: React.FC = () => {
 
   useEffect(() => {
     const token = Cookies.get('authToken');
-    if (token) {
+    const user = Cookies.get('userID');
+    if (token && user) {
       console.log('Auth token found:', token);
       setAuthToken(token);
+      setUserID(user);
       fetchBases(token);
     } else {
       console.log('No auth token found, redirecting to login...');
@@ -76,7 +79,7 @@ const HQ: React.FC = () => {
           name: 'test from website',
           size: 25,
           planet: '6641803bb803c40a1eb88bed',
-          user: '6643f1ced46931726dc0272a',
+          user: userID,
         }),
       });
 
