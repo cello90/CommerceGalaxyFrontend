@@ -39,8 +39,8 @@ const Index: NextPage = () => {
         console.log("Login successful:", result);
 
         // Save the auth token in a session storage
-        sessionStorage.setItem("authToken", result.token);
-        sessionStorage.setItem("userID", result.userID);
+        sessionStorage.setItem("authToken", result.access_token);
+        sessionStorage.setItem("userID", result.id);
 
         reset();
         router.push("/hq"); // Navigate to dashboard after successful login

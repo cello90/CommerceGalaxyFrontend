@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router"; // Import useRouter from next/router
 import BaseTable from "../components/bases/base_table";
 import BaseForm from "../components/bases/base_form";
 import { Base } from "../components/bases/base_type";
@@ -12,6 +13,8 @@ const HQ: React.FC = () => {
   const [editName, setEditName] = useState<string>("");
   const [editSize, setEditSize] = useState<number>(0);
 
+  const router = useRouter(); // Initialize useRouter
+
   useEffect(() => {
     const token = sessionStorage.getItem("authToken");
     const user = sessionStorage.getItem("userID");
@@ -23,6 +26,7 @@ const HQ: React.FC = () => {
     } else {
       console.log("No auth token found, redirecting to login...");
       setRequestMessage("No auth token found. Please login.");
+      router.push("/login"); // Redirect to login page
     }
   }, []);
 
