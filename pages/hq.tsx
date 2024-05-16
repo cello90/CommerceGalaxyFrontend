@@ -53,13 +53,16 @@ const HQ: React.FC = () => {
 
   const fetchPlanets = async (token: string) => {
     try {
-      const response = await fetch("http://localhost:8081/planets", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        "https://api.commercegalaxy.online/planets",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         const result = await response.json();
@@ -76,7 +79,7 @@ const HQ: React.FC = () => {
 
   const fetchBases = async (token: string) => {
     try {
-      const response = await fetch("http://localhost:8081/bases", {
+      const response = await fetch("https://api.commercegalaxy.online/bases", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -100,13 +103,16 @@ const HQ: React.FC = () => {
 
   const fetchBuildings = async (token: string) => {
     try {
-      const response = await fetch("http://localhost:8081/buildings", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        "https://api.commercegalaxy.online/buildings",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         const result = await response.json();
@@ -130,7 +136,7 @@ const HQ: React.FC = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8081/bases", {
+      const response = await fetch("https://api.commercegalaxy.online/bases", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -170,19 +176,22 @@ const HQ: React.FC = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8081/buildings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({
-          name,
-          size,
-          type,
-          base: selectedBaseId,
-        }),
-      });
+      const response = await fetch(
+        "https://api.commercegalaxy.online/buildings",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({
+            name,
+            size,
+            type,
+            base: selectedBaseId,
+          }),
+        }
+      );
 
       if (response.ok) {
         setRequestMessage("Building created successfully.");
@@ -217,17 +226,20 @@ const HQ: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8081/bases/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({
-          name: editName,
-          size: editSize,
-        }),
-      });
+      const response = await fetch(
+        `https://api.commercegalaxy.online/bases/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({
+            name: editName,
+            size: editSize,
+          }),
+        }
+      );
 
       if (response.ok) {
         setRequestMessage("Base updated successfully.");
@@ -250,18 +262,21 @@ const HQ: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8081/buildings/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({
-          name: editName,
-          size: editSize,
-          type: editType,
-        }),
-      });
+      const response = await fetch(
+        `https://api.commercegalaxy.online/buildings/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({
+            name: editName,
+            size: editSize,
+            type: editType,
+          }),
+        }
+      );
 
       if (response.ok) {
         setRequestMessage("Building updated successfully.");
@@ -284,13 +299,16 @@ const HQ: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8081/bases/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      const response = await fetch(
+        `https://api.commercegalaxy.online/bases/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
 
       if (response.ok) {
         setRequestMessage("Base deleted successfully.");
@@ -312,13 +330,16 @@ const HQ: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8081/buildings/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      const response = await fetch(
+        `https://api.commercegalaxy.online/buildings/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
 
       if (response.ok) {
         setRequestMessage("Building deleted successfully.");
