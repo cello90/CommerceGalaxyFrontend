@@ -13,17 +13,24 @@ import BaseForm from "../components/bases/base_form";
 import { Base } from "../components/bases/base_type";
 import PlanetsTable from "../components/planets/planet_table";
 import { Planet } from "../components/planets/planet_type";
+import BuildingsTable from "@/components/buildings/building_table";
+import BuildingForm from "@/components/buildings/building_form";
+import { Building } from "@/components/buildings/building_type";
 
 const HQ: React.FC = () => {
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [userID, setUserID] = useState<string | null>(null);
   const [requestMessage, setRequestMessage] = useState<string | null>(null);
-  const [planets, setPlanets] = useState<Planet[]>([]);
-  const [selectedPlanetId, setSelectedPlanetId] = useState<string | null>(null);
   const [bases, setBases] = useState<Base[]>([]);
+  const [planets, setPlanets] = useState<Planet[]>([]);
+  const [buildings, setBuildings] = useState<Building[]>([]);
+  const [selectedPlanetId, setSelectedPlanetId] = useState<string | null>(null);
+  const [selectedBaseId, setSelectedBaseId] = useState<string | null>(null);
   const [editingBase, setEditingBase] = useState<string | null>(null);
+  const [editingBuilding, setEditingBuilding] = useState<string | null>(null);
   const [editName, setEditName] = useState<string>("");
   const [editSize, setEditSize] = useState<number>(0);
+  const [editType, setEditType] = useState<string>("");
 
   const router = useRouter(); // Initialize useRouter
 
@@ -36,6 +43,7 @@ const HQ: React.FC = () => {
       setUserID(user);
       fetchBases(token);
       fetchPlanets(token);
+      fetchBuildings(token);
     } else {
       console.log("No auth token found, redirecting to login...");
       setRequestMessage("No auth token found. Please login.");
@@ -90,6 +98,29 @@ const HQ: React.FC = () => {
     }
   };
 
+  const fetchBuildings = async (token: string) => {
+    try {
+      const response = await fetch("http://localhost:8081/buildings", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setBuildings(result);
+      } else {
+        const errorData = await response.json();
+        setRequestMessage(errorData.message || "Failed to fetch buildings.");
+      }
+    } catch (error) {
+      setRequestMessage("An error occurred. Please try again later.");
+      console.error("Fetch buildings error:", error);
+    }
+  };
+
   const handleCreateBaseClick = async () => {
     if (!authToken || !selectedPlanetId) {
       setRequestMessage(
@@ -126,10 +157,57 @@ const HQ: React.FC = () => {
     }
   };
 
-  const handleEditClick = (base: Base) => {
+  const handleCreateBuildingClick = async (
+    name: string,
+    size: number,
+    type: string
+  ) => {
+    if (!authToken || !selectedBaseId) {
+      setRequestMessage(
+        "No auth token found or no base selected. Please log in and select a base first."
+      );
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8081/buildings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          name,
+          size,
+          type,
+          base: selectedBaseId,
+        }),
+      });
+
+      if (response.ok) {
+        setRequestMessage("Building created successfully.");
+        fetchBuildings(authToken);
+      } else {
+        const errorData = await response.json();
+        setRequestMessage(errorData.message || "Failed to create building.");
+      }
+    } catch (error) {
+      setRequestMessage("An error occurred. Please try again later.");
+      console.error("Create building error:", error);
+    }
+  };
+
+  const handleEditBaseClick = (base: Base) => {
     setEditingBase(base._id);
     setEditName(base.name);
     setEditSize(base.size);
+  };
+
+  const handleEditBuildingClick = (building: Building) => {
+    setEditingBuilding(building._id);
+    setEditName(building.name);
+    setEditSize(building.size);
+    setEditType(building.type);
   };
 
   const handleUpdateBase = async (id: string) => {
@@ -165,6 +243,40 @@ const HQ: React.FC = () => {
     }
   };
 
+  const handleUpdateBuilding = async (id: string) => {
+    if (!authToken) {
+      setRequestMessage("No auth token found. Please log in first.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8081/buildings/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          name: editName,
+          size: editSize,
+          type: editType,
+        }),
+      });
+
+      if (response.ok) {
+        setRequestMessage("Building updated successfully.");
+        fetchBuildings(authToken);
+        setEditingBuilding(null);
+      } else {
+        const errorData = await response.json();
+        setRequestMessage(errorData.message || "Failed to update building.");
+      }
+    } catch (error) {
+      setRequestMessage("An error occurred. Please try again later.");
+      console.error("Update building error:", error);
+    }
+  };
+
   const handleDeleteBase = async (id: string) => {
     if (!authToken) {
       setRequestMessage("No auth token found. Please log in first.");
@@ -193,13 +305,53 @@ const HQ: React.FC = () => {
     }
   };
 
+  const handleDeleteBuilding = async (id: string) => {
+    if (!authToken) {
+      setRequestMessage("No auth token found. Please log in first.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8081/buildings/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      if (response.ok) {
+        setRequestMessage("Building deleted successfully.");
+        fetchBuildings(authToken);
+      } else {
+        const errorData = await response.json();
+        setRequestMessage(errorData.message || "Failed to delete building.");
+      }
+    } catch (error) {
+      setRequestMessage("An error occurred. Please try again later.");
+      console.error("Delete building error:", error);
+    }
+  };
+
   const handleSelectPlanet = (planetId: string) => {
-    setSelectedPlanetId(planetId);
+    setSelectedPlanetId((prevSelectedPlanetId) =>
+      prevSelectedPlanetId === planetId ? null : planetId
+    );
+  };
+
+  const handleSelectBase = (baseId: string) => {
+    setSelectedBaseId((prevSelectedBaseId) =>
+      prevSelectedBaseId === baseId ? null : baseId
+    );
   };
 
   const filteredBases = selectedPlanetId
     ? bases.filter((base) => base.planet._id === selectedPlanetId)
     : bases;
+
+  const filteredBuildings = selectedBaseId
+    ? buildings.filter((building) => building.base._id === selectedBaseId)
+    : buildings;
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
@@ -236,9 +388,11 @@ const HQ: React.FC = () => {
                     editSize={editSize}
                     setEditName={setEditName}
                     setEditSize={setEditSize}
-                    handleEditClick={handleEditClick}
+                    handleEditClick={handleEditBaseClick}
                     handleUpdateBase={handleUpdateBase}
                     handleDeleteBase={handleDeleteBase}
+                    onSelectBase={handleSelectBase} // Add onSelectBase prop
+                    selectedBaseId={selectedBaseId} // Add selectedBaseId prop
                   />
                 </div>
               </>
@@ -249,7 +403,27 @@ const HQ: React.FC = () => {
               <p className="mt-4 text-yellow-500 text-sm">{requestMessage}</p>
             )}
           </section>
-          <section className="bg-gray-800 p-4 rounded">Section 3</section>
+          <section className="bg-gray-800 p-4 rounded">
+            <h2 className="text-2xl mb-4">Buildings</h2>
+            <BuildingForm
+              handleCreateBuildingClick={handleCreateBuildingClick}
+            />
+            <div className="mt-6">
+              <BuildingsTable
+                buildings={filteredBuildings}
+                editingBuilding={editingBuilding}
+                editName={editName}
+                editSize={editSize}
+                editType={editType}
+                setEditName={setEditName}
+                setEditSize={setEditSize}
+                setEditType={setEditType}
+                handleEditClick={handleEditBuildingClick}
+                handleUpdateBuilding={handleUpdateBuilding}
+                handleDeleteBuilding={handleDeleteBuilding}
+              />
+            </div>
+          </section>
           <section className="bg-gray-800 p-4 rounded">Section 4</section>
         </main>
 
