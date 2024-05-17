@@ -4,11 +4,15 @@ import { Building } from "../types/building_type";
 interface BuildingsTableProps {
   buildings: Building[];
   handleDeleteBuilding: (id: string) => void;
+  onSelectBuilding: (buildingId: string) => void;
+  selectedBuildingId: string | null;
 }
 
 const BuildingsTable: React.FC<BuildingsTableProps> = ({
   buildings,
   handleDeleteBuilding,
+  onSelectBuilding,
+  selectedBuildingId,
 }) => {
   return (
     <table className="min-w-full bg-gray-800 text-white">
@@ -24,7 +28,13 @@ const BuildingsTable: React.FC<BuildingsTableProps> = ({
       </thead>
       <tbody>
         {buildings.map((building) => (
-          <tr key={building._id}>
+          <tr
+            key={building._id}
+            onClick={() => onSelectBuilding(building._id)}
+            className={`cursor-pointer ${
+              selectedBuildingId === building._id ? "bg-gray-700" : ""
+            }`}
+          >
             <td className="py-2 px-4 border-b border-gray-600">
               {building._id}
             </td>

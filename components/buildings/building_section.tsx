@@ -9,7 +9,9 @@ interface BuildingSectionProps {
   userID: string | null;
   buildings: Building[];
   catalogs: CatalogItem[];
+  onSelectBuilding: (buildingId: string) => void;
   fetchBuildings: (token: string) => Promise<void>;
+  selectedBuildingId: string | null;
   selectedBaseId: string | null;
 }
 
@@ -20,6 +22,8 @@ const BuildingSection: React.FC<BuildingSectionProps> = ({
   catalogs,
   fetchBuildings,
   selectedBaseId,
+  onSelectBuilding,
+  selectedBuildingId,
 }) => {
   const [requestMessage, setRequestMessage] = useState<string | null>(null);
 
@@ -108,6 +112,8 @@ const BuildingSection: React.FC<BuildingSectionProps> = ({
         <BuildingsTable
           buildings={buildings}
           handleDeleteBuilding={handleDeleteBuilding}
+          onSelectBuilding={onSelectBuilding}
+          selectedBuildingId={selectedBuildingId}
         />
       </div>
       {requestMessage && (

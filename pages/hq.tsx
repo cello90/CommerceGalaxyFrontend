@@ -10,11 +10,15 @@ import {
 } from "react-icons/fa";
 import { Base } from "../components/types/base_type";
 import PlanetsTable from "../components/planets/planet_table";
+import BaseSection from "@/components/bases/base_section";
+import BuildingSection from "@/components/buildings/building_section";
+import RecipeSection from "@/components/recipe/recipe_section";
+
+// types
 import { Planet } from "../components/types/planet_type";
 import { Building } from "@/components/types/building_type";
 import { CatalogItem } from "@/components/types/catalog_type";
-import BuildingSection from "@/components/buildings/building_section";
-import BaseSection from "@/components/bases/base_section";
+import { Recipe } from "@/components/types/recipe_type";
 
 const HQ: React.FC = () => {
   const [authToken, setAuthToken] = useState<string | null>(null);
@@ -24,8 +28,12 @@ const HQ: React.FC = () => {
   const [planets, setPlanets] = useState<Planet[]>([]);
   const [buildings, setBuildings] = useState<Building[]>([]);
   const [catalogs, setCatalogs] = useState<CatalogItem[]>([]);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedPlanetId, setSelectedPlanetId] = useState<string | null>(null);
   const [selectedBaseId, setSelectedBaseId] = useState<string | null>(null);
+  const [selectedBuildingId, setSelectedBuildingId] = useState<string | null>(
+    null
+  );
 
   const router = useRouter(); // Initialize useRouter
 
@@ -40,6 +48,7 @@ const HQ: React.FC = () => {
       fetchPlanets(token);
       fetchBuildings(token);
       fetchCatalogs(token);
+      fetchRecipes(token);
     } else {
       console.log("No auth token found, redirecting to login...");
       setRequestMessage("No auth token found. Please login.");
@@ -149,6 +158,30 @@ const HQ: React.FC = () => {
     }
   };
 
+  const fetchRecipes = async (token: string) => {
+    try {
+      const response = await fetch(
+        "https://api.commercegalaxy.online/recipes",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        const result = await response.json();
+        setRecipes(result);
+      } else {
+        const errorData = await response.json();
+        setRequestMessage(errorData.message || "Failed to fetch recipes.");
+      }
+    } catch (error) {
+      setRequestMessage("An error occurred. Please try again later.");
+    }
+  };
+
   const handleSelectPlanet = (planetId: string) => {
     setSelectedPlanetId((prevSelectedPlanetId) =>
       prevSelectedPlanetId === planetId ? null : planetId
@@ -159,6 +192,42 @@ const HQ: React.FC = () => {
     setSelectedBaseId((prevSelectedBaseId) =>
       prevSelectedBaseId === baseId ? null : baseId
     );
+  };
+
+  const handleSelectBuilding = (buildingId: string) => {
+    setSelectedBuildingId((prev) => (prev === buildingId ? null : buildingId));
+  };
+
+  const createFabrication = async (recipeId: string) => {
+    if (!authToken) {
+      setRequestMessage("No auth token found. Please log in first.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "https://api.commercegalaxy.online/fabricators",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({
+            name: "Fabricator test from web",
+          }),
+        }
+      );
+
+      if (response.ok) {
+        setRequestMessage("Fabrication created successfully.");
+      } else {
+        const errorData = await response.json();
+        setRequestMessage(errorData.message || "Failed to create fabrication.");
+      }
+    } catch (error) {
+      setRequestMessage("An error occurred. Please try again later.");
+    }
   };
 
   const filteredBases = selectedPlanetId
@@ -204,10 +273,19 @@ const HQ: React.FC = () => {
             userID={userID}
             buildings={filteredBuildings}
             catalogs={catalogs}
+            onSelectBuilding={handleSelectBuilding}
             fetchBuildings={fetchBuildings}
             selectedBaseId={selectedBaseId}
+            selectedBuildingId={selectedBuildingId}
           />
-          <section className="bg-gray-800 p-4 rounded">Section 4</section>
+          <RecipeSection
+            authToken={authToken}
+            selectedBuildingId={selectedBuildingId}
+            fetchRecipes={fetchRecipes}
+            recipes={recipes}
+            createFabrication={createFabrication}
+            buildings={buildings}
+          />
         </main>
 
         <div className="w-16 bg-gray-700 flex flex-col items-center py-4">
