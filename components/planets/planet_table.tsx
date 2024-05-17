@@ -1,5 +1,5 @@
 import React from "react";
-import { Planet } from "./planet_type";
+import { Planet } from "../types/planet_type";
 
 interface PlanetsTableProps {
   planets: Planet[];

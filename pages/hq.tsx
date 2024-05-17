@@ -8,14 +8,13 @@ import {
   FaEnvelope,
   FaBuilding,
 } from "react-icons/fa";
-import BaseTable from "../components/bases/base_table";
-import BaseForm from "../components/bases/base_form";
-import { Base } from "../components/bases/base_type";
+import { Base } from "../components/types/base_type";
 import PlanetsTable from "../components/planets/planet_table";
-import { Planet } from "../components/planets/planet_type";
-import BuildingsTable from "@/components/buildings/building_table";
-import BuildingForm from "@/components/buildings/building_form";
-import { Building } from "@/components/buildings/building_type";
+import { Planet } from "../components/types/planet_type";
+import { Building } from "@/components/types/building_type";
+import { CatalogItem } from "@/components/types/catalog_type";
+import BuildingSection from "@/components/buildings/building_section";
+import BaseSection from "@/components/bases/base_section";
 
 const HQ: React.FC = () => {
   const [authToken, setAuthToken] = useState<string | null>(null);
@@ -24,13 +23,9 @@ const HQ: React.FC = () => {
   const [bases, setBases] = useState<Base[]>([]);
   const [planets, setPlanets] = useState<Planet[]>([]);
   const [buildings, setBuildings] = useState<Building[]>([]);
+  const [catalogs, setCatalogs] = useState<CatalogItem[]>([]);
   const [selectedPlanetId, setSelectedPlanetId] = useState<string | null>(null);
   const [selectedBaseId, setSelectedBaseId] = useState<string | null>(null);
-  const [editingBase, setEditingBase] = useState<string | null>(null);
-  const [editingBuilding, setEditingBuilding] = useState<string | null>(null);
-  const [editName, setEditName] = useState<string>("");
-  const [editSize, setEditSize] = useState<number>(0);
-  const [editType, setEditType] = useState<string>("");
 
   const router = useRouter(); // Initialize useRouter
 
@@ -44,6 +39,7 @@ const HQ: React.FC = () => {
       fetchBases(token);
       fetchPlanets(token);
       fetchBuildings(token);
+      fetchCatalogs(token);
     } else {
       console.log("No auth token found, redirecting to login...");
       setRequestMessage("No auth token found. Please login.");
@@ -127,230 +123,29 @@ const HQ: React.FC = () => {
     }
   };
 
-  const handleCreateBaseClick = async () => {
-    if (!authToken || !selectedPlanetId) {
-      setRequestMessage(
-        "No auth token found or selected ID was null. Please log in first or select a planet."
-      );
-      return;
-    }
-
-    try {
-      const response = await fetch("https://api.commercegalaxy.online/bases", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({
-          name: "test from website",
-          size: 25,
-          planet: selectedPlanetId,
-          user: userID,
-        }),
-      });
-
-      if (response.ok) {
-        setRequestMessage("Base created successfully.");
-        fetchBases(authToken);
-      } else {
-        const errorData = await response.json();
-        setRequestMessage(errorData.message || "Failed to create base.");
-      }
-    } catch (error) {
-      setRequestMessage("An error occurred. Please try again later.");
-      console.error("Create base error:", error);
-    }
-  };
-
-  const handleCreateBuildingClick = async (
-    name: string,
-    size: number,
-    type: string
-  ) => {
-    if (!authToken || !selectedBaseId) {
-      setRequestMessage(
-        "No auth token found or no base selected. Please log in and select a base first."
-      );
-      return;
-    }
-
+  const fetchCatalogs = async (token: string) => {
     try {
       const response = await fetch(
-        "https://api.commercegalaxy.online/buildings",
+        "https://api.commercegalaxy.online/catalogs",
         {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({
-            name,
-            size,
-            type,
-            base: selectedBaseId,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        setRequestMessage("Building created successfully.");
-        fetchBuildings(authToken);
-      } else {
-        const errorData = await response.json();
-        setRequestMessage(errorData.message || "Failed to create building.");
-      }
-    } catch (error) {
-      setRequestMessage("An error occurred. Please try again later.");
-      console.error("Create building error:", error);
-    }
-  };
-
-  const handleEditBaseClick = (base: Base) => {
-    setEditingBase(base._id);
-    setEditName(base.name);
-    setEditSize(base.size);
-  };
-
-  const handleEditBuildingClick = (building: Building) => {
-    setEditingBuilding(building._id);
-    setEditName(building.name);
-    setEditSize(building.size);
-    setEditType(building.type);
-  };
-
-  const handleUpdateBase = async (id: string) => {
-    if (!authToken) {
-      setRequestMessage("No auth token found. Please log in first.");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `https://api.commercegalaxy.online/bases/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({
-            name: editName,
-            size: editSize,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        setRequestMessage("Base updated successfully.");
-        fetchBases(authToken);
-        setEditingBase(null);
-      } else {
-        const errorData = await response.json();
-        setRequestMessage(errorData.message || "Failed to update base.");
-      }
-    } catch (error) {
-      setRequestMessage("An error occurred. Please try again later.");
-      console.error("Update base error:", error);
-    }
-  };
-
-  const handleUpdateBuilding = async (id: string) => {
-    if (!authToken) {
-      setRequestMessage("No auth token found. Please log in first.");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `https://api.commercegalaxy.online/buildings/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({
-            name: editName,
-            size: editSize,
-            type: editType,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        setRequestMessage("Building updated successfully.");
-        fetchBuildings(authToken);
-        setEditingBuilding(null);
-      } else {
-        const errorData = await response.json();
-        setRequestMessage(errorData.message || "Failed to update building.");
-      }
-    } catch (error) {
-      setRequestMessage("An error occurred. Please try again later.");
-      console.error("Update building error:", error);
-    }
-  };
-
-  const handleDeleteBase = async (id: string) => {
-    if (!authToken) {
-      setRequestMessage("No auth token found. Please log in first.");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `https://api.commercegalaxy.online/bases/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
       if (response.ok) {
-        setRequestMessage("Base deleted successfully.");
-        fetchBases(authToken);
+        const result = await response.json();
+        setCatalogs(result);
       } else {
         const errorData = await response.json();
-        setRequestMessage(errorData.message || "Failed to delete base.");
+        setRequestMessage(errorData.message || "Failed to fetch catalogs.");
       }
     } catch (error) {
       setRequestMessage("An error occurred. Please try again later.");
-      console.error("Delete base error:", error);
-    }
-  };
-
-  const handleDeleteBuilding = async (id: string) => {
-    if (!authToken) {
-      setRequestMessage("No auth token found. Please log in first.");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `https://api.commercegalaxy.online/buildings/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        setRequestMessage("Building deleted successfully.");
-        fetchBuildings(authToken);
-      } else {
-        const errorData = await response.json();
-        setRequestMessage(errorData.message || "Failed to delete building.");
-      }
-    } catch (error) {
-      setRequestMessage("An error occurred. Please try again later.");
-      console.error("Delete building error:", error);
+      console.error("Fetch catalogs error:", error);
     }
   };
 
@@ -396,55 +191,22 @@ const HQ: React.FC = () => {
               selectedPlanetId={selectedPlanetId}
             />
           </section>
-          <section className="bg-gray-800 p-4 rounded">
-            {authToken ? (
-              <>
-                <BaseForm handleCreateBaseClick={handleCreateBaseClick} />
-                <div className="mt-6">
-                  <h2 className="text-2xl mb-4">Bases</h2>
-                  <BaseTable
-                    bases={filteredBases}
-                    editingBase={editingBase}
-                    editName={editName}
-                    editSize={editSize}
-                    setEditName={setEditName}
-                    setEditSize={setEditSize}
-                    handleEditClick={handleEditBaseClick}
-                    handleUpdateBase={handleUpdateBase}
-                    handleDeleteBase={handleDeleteBase}
-                    onSelectBase={handleSelectBase} // Add onSelectBase prop
-                    selectedBaseId={selectedBaseId} // Add selectedBaseId prop
-                  />
-                </div>
-              </>
-            ) : (
-              <p>You are not logged in. Please login to access the HQ.</p>
-            )}
-            {requestMessage && (
-              <p className="mt-4 text-yellow-500 text-sm">{requestMessage}</p>
-            )}
-          </section>
-          <section className="bg-gray-800 p-4 rounded">
-            <h2 className="text-2xl mb-4">Buildings</h2>
-            <BuildingForm
-              handleCreateBuildingClick={handleCreateBuildingClick}
-            />
-            <div className="mt-6">
-              <BuildingsTable
-                buildings={filteredBuildings}
-                editingBuilding={editingBuilding}
-                editName={editName}
-                editSize={editSize}
-                editType={editType}
-                setEditName={setEditName}
-                setEditSize={setEditSize}
-                setEditType={setEditType}
-                handleEditClick={handleEditBuildingClick}
-                handleUpdateBuilding={handleUpdateBuilding}
-                handleDeleteBuilding={handleDeleteBuilding}
-              />
-            </div>
-          </section>
+          <BaseSection
+            authToken={authToken}
+            userID={userID}
+            bases={filteredBases}
+            onSelectBase={handleSelectBase}
+            selectedBaseId={selectedBaseId}
+            fetchBases={fetchBases}
+          />
+          <BuildingSection
+            authToken={authToken}
+            userID={userID}
+            buildings={filteredBuildings}
+            catalogs={catalogs}
+            fetchBuildings={fetchBuildings}
+            selectedBaseId={selectedBaseId}
+          />
           <section className="bg-gray-800 p-4 rounded">Section 4</section>
         </main>
 

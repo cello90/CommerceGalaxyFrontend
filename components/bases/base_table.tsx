@@ -1,5 +1,5 @@
 import React from "react";
-import { Base } from "./base_type";
+import { Base } from "../types/base_type";
 import BaseRow from "./base_row";
 
 interface BaseTableProps {
