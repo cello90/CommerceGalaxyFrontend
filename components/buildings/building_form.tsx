@@ -1,52 +1,60 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { CatalogItem } from "../types/catalog_type";
 
 interface BuildingFormProps {
-  handleCreateBuildingClick: (name: string, size: number, type: string) => void;
+  handleCreateBuildingClick: (
+    name: string,
+    size: number,
+    type: string,
+    catalogId: string
+  ) => void;
+  catalogs: CatalogItem[];
 }
 
 const BuildingForm: React.FC<BuildingFormProps> = ({
   handleCreateBuildingClick,
+  catalogs,
 }) => {
-  const [name, setName] = useState("");
-  const [size, setSize] = useState(0);
-  const [type, setType] = useState("");
+  const [selectedCatalogId, setSelectedCatalogId] = useState<string>("");
+
+  useEffect(() => {
+    if (catalogs.length > 0) {
+      setSelectedCatalogId(catalogs[0]._id);
+    }
+  }, [catalogs]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    handleCreateBuildingClick(name, size, type);
-    setName("");
-    setSize(0);
-    setType("");
+    const selectedCatalog = catalogs.find(
+      (catalog) => catalog._id === selectedCatalogId
+    );
+    if (selectedCatalog) {
+      handleCreateBuildingClick(
+        selectedCatalog.name,
+        selectedCatalog.size,
+        selectedCatalog.type,
+        selectedCatalogId
+      );
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-300">Name</label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+        <label className="block text-sm font-medium text-gray-300">
+          Select Catalog Item
+        </label>
+        <select
+          value={selectedCatalogId}
+          onChange={(e) => setSelectedCatalogId(e.target.value)}
           className="mt-1 px-4 py-2 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-300">Size</label>
-        <input
-          type="number"
-          value={size}
-          onChange={(e) => setSize(Number(e.target.value))}
-          className="mt-1 px-4 py-2 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-300">Type</label>
-        <input
-          type="text"
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          className="mt-1 px-4 py-2 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        >
+          {catalogs.map((catalog) => (
+            <option key={catalog._id} value={catalog._id}>
+              {catalog.name} (Size: {catalog.size}, Type: {catalog.type})
+            </option>
+          ))}
+        </select>
       </div>
       <button
         type="submit"

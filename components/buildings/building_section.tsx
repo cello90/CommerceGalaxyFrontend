@@ -21,10 +21,6 @@ const BuildingSection: React.FC<BuildingSectionProps> = ({
   fetchBuildings,
   selectedBaseId,
 }) => {
-  const [editingBuilding, setEditingBuilding] = useState<string | null>(null);
-  const [editName, setEditName] = useState<string>("");
-  const [editSize, setEditSize] = useState<number>(0);
-  const [editType, setEditType] = useState<string>("");
   const [requestMessage, setRequestMessage] = useState<string | null>(null);
 
   const handleCreateBuildingClick = async (
@@ -71,49 +67,6 @@ const BuildingSection: React.FC<BuildingSectionProps> = ({
     }
   };
 
-  const handleEditBuildingClick = (building: Building) => {
-    setEditingBuilding(building._id);
-    setEditName(building.name);
-    setEditSize(building.size);
-    setEditType(building.type);
-  };
-
-  const handleUpdateBuilding = async (id: string) => {
-    if (!authToken) {
-      setRequestMessage("No auth token found. Please log in first.");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `https://api.commercegalaxy.online/buildings/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({
-            name: editName,
-            size: editSize,
-            type: editType,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        setRequestMessage("Building updated successfully.");
-        fetchBuildings(authToken);
-        setEditingBuilding(null);
-      } else {
-        const errorData = await response.json();
-        setRequestMessage(errorData.message || "Failed to update building.");
-      }
-    } catch (error) {
-      setRequestMessage("An error occurred. Please try again later.");
-    }
-  };
-
   const handleDeleteBuilding = async (id: string) => {
     if (!authToken) {
       setRequestMessage("No auth token found. Please log in first.");
@@ -154,15 +107,6 @@ const BuildingSection: React.FC<BuildingSectionProps> = ({
       <div className="mt-6">
         <BuildingsTable
           buildings={buildings}
-          editingBuilding={editingBuilding}
-          editName={editName}
-          editSize={editSize}
-          editType={editType}
-          setEditName={setEditName}
-          setEditSize={setEditSize}
-          setEditType={setEditType}
-          handleEditClick={handleEditBuildingClick}
-          handleUpdateBuilding={handleUpdateBuilding}
           handleDeleteBuilding={handleDeleteBuilding}
         />
       </div>

@@ -71,17 +71,20 @@ const BaseSection: React.FC<BaseSectionProps> = ({
     }
 
     try {
-      const response = await fetch(`http://localhost:8081/bases/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({
-          name: editName,
-          size: editSize,
-        }),
-      });
+      const response = await fetch(
+        `https://api.commercegalaxy.online/bases/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({
+            name: editName,
+            size: editSize,
+          }),
+        }
+      );
 
       if (response.ok) {
         setRequestMessage("Base updated successfully.");
