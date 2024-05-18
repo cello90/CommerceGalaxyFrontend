@@ -41,7 +41,6 @@ const BuildingSection: React.FC<BuildingSectionProps> = ({
     try {
       const response = await fetch(
         "https://api.commercegalaxy.online/buildings",
-        //"http://localhost:8081/buildings",
         {
           method: "POST",
           headers: {

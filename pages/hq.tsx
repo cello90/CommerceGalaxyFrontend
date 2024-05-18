@@ -201,35 +201,40 @@ const HQ: React.FC = () => {
     setSelectedBuildingId((prev) => (prev === buildingId ? null : buildingId));
   };
 
-  const createFabrication = async (recipeId: string) => {
-    if (!authToken) {
+  const startFabricating = async (recipeId: string) => {
+    console.log("Creating fabrication...", recipeId, selectedBuildingId);
+    if (!authToken || !selectedBuildingId) {
       setRequestMessage("No auth token found. Please log in first.");
       return;
     }
 
     try {
       const response = await fetch(
-        "https://api.commercegalaxy.online/fabricators",
+        `https://api.commercegalaxy.online/buildings/${selectedBuildingId}`,
         {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authToken}`,
           },
           body: JSON.stringify({
-            name: "Fabricator test from web",
+            producing: recipeId,
+            startTime: new Date().toISOString(),
           }),
         }
       );
 
       if (response.ok) {
         setRequestMessage("Fabrication created successfully.");
+        console.log("Fabrication created successfully.");
       } else {
         const errorData = await response.json();
         setRequestMessage(errorData.message || "Failed to create fabrication.");
+        console.log(errorData.message || "Failed to create fabrication.");
       }
     } catch (error) {
       setRequestMessage("An error occurred. Please try again later.");
+      console.log("An error occurred. Please try again later.");
     }
   };
 
@@ -288,7 +293,7 @@ const HQ: React.FC = () => {
             selectedBuildingId={selectedBuildingId}
             fetchRecipes={fetchRecipes}
             recipes={recipes}
-            createFabrication={createFabrication}
+            createFabrication={startFabricating}
             buildings={buildings}
           />
         </main>
