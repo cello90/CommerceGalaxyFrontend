@@ -14,6 +14,7 @@ interface BaseTableProps {
   handleDeleteBase: (id: string) => void;
   onSelectBase: (baseId: string) => void;
   selectedBaseId: string | null;
+  selectedPlanetId: string | null;
 }
 
 const BaseTable: React.FC<BaseTableProps> = ({
@@ -28,6 +29,7 @@ const BaseTable: React.FC<BaseTableProps> = ({
   handleDeleteBase,
   onSelectBase,
   selectedBaseId,
+  selectedPlanetId,
 }) => {
   return (
     <table className="min-w-full bg-gray-800 text-white">

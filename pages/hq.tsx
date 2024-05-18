@@ -31,6 +31,9 @@ const HQ: React.FC = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedPlanetId, setSelectedPlanetId] = useState<string | null>(null);
   const [selectedBaseId, setSelectedBaseId] = useState<string | null>(null);
+  const [selectedCatalogId, setselectedCatalogId] = useState<string | null>(
+    null
+  );
   const [selectedBuildingId, setSelectedBuildingId] = useState<string | null>(
     null
   );
@@ -267,6 +270,7 @@ const HQ: React.FC = () => {
             onSelectBase={handleSelectBase}
             selectedBaseId={selectedBaseId}
             fetchBases={fetchBases}
+            selectedPlanetId={selectedPlanetId}
           />
           <BuildingSection
             authToken={authToken}
@@ -277,6 +281,7 @@ const HQ: React.FC = () => {
             fetchBuildings={fetchBuildings}
             selectedBaseId={selectedBaseId}
             selectedBuildingId={selectedBuildingId}
+            selectedCatalogId={selectedCatalogId}
           />
           <RecipeSection
             authToken={authToken}

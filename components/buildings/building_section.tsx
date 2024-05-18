@@ -13,6 +13,7 @@ interface BuildingSectionProps {
   fetchBuildings: (token: string) => Promise<void>;
   selectedBuildingId: string | null;
   selectedBaseId: string | null;
+  selectedCatalogId: string | null;
 }
 
 const BuildingSection: React.FC<BuildingSectionProps> = ({
@@ -24,15 +25,12 @@ const BuildingSection: React.FC<BuildingSectionProps> = ({
   selectedBaseId,
   onSelectBuilding,
   selectedBuildingId,
+  selectedCatalogId,
 }) => {
   const [requestMessage, setRequestMessage] = useState<string | null>(null);
 
-  const handleCreateBuildingClick = async (
-    name: string,
-    size: number,
-    type: string,
-    catalogId: string
-  ) => {
+  const handleCreateBuildingClick = async (selectedCatalogId: string) => {
+    console.log(selectedCatalogId);
     if (!authToken || !selectedBaseId) {
       setRequestMessage(
         "No auth token found or no base selected. Please log in and select a base first."
@@ -43,6 +41,7 @@ const BuildingSection: React.FC<BuildingSectionProps> = ({
     try {
       const response = await fetch(
         "https://api.commercegalaxy.online/buildings",
+        //"http://localhost:8081/buildings",
         {
           method: "POST",
           headers: {
@@ -50,10 +49,7 @@ const BuildingSection: React.FC<BuildingSectionProps> = ({
             Authorization: `Bearer ${authToken}`,
           },
           body: JSON.stringify({
-            name,
-            size,
-            type,
-            catalog: catalogId,
+            catalog: selectedCatalogId,
             base: selectedBaseId,
           }),
         }

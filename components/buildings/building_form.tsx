@@ -2,12 +2,7 @@ import React, { useState, useEffect } from "react";
 import { CatalogItem } from "../types/catalog_type";
 
 interface BuildingFormProps {
-  handleCreateBuildingClick: (
-    name: string,
-    size: number,
-    type: string,
-    catalogId: string
-  ) => void;
+  handleCreateBuildingClick: (catalogId: string) => void;
   catalogs: CatalogItem[];
 }
 
@@ -29,12 +24,7 @@ const BuildingForm: React.FC<BuildingFormProps> = ({
       (catalog) => catalog._id === selectedCatalogId
     );
     if (selectedCatalog) {
-      handleCreateBuildingClick(
-        selectedCatalog.name,
-        selectedCatalog.size,
-        selectedCatalog.type,
-        selectedCatalogId
-      );
+      handleCreateBuildingClick(selectedCatalogId);
     }
   };
 

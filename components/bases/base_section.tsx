@@ -10,6 +10,7 @@ interface BaseSectionProps {
   onSelectBase: (baseId: string) => void;
   selectedBaseId: string | null;
   fetchBases: (token: string) => Promise<void>;
+  selectedPlanetId: string | null;
 }
 
 const BaseSection: React.FC<BaseSectionProps> = ({
@@ -18,6 +19,7 @@ const BaseSection: React.FC<BaseSectionProps> = ({
   bases,
   onSelectBase,
   selectedBaseId,
+  selectedPlanetId,
   fetchBases,
 }) => {
   const [editingBase, setEditingBase] = useState<string | null>(null);
@@ -26,7 +28,7 @@ const BaseSection: React.FC<BaseSectionProps> = ({
   const [requestMessage, setRequestMessage] = useState<string | null>(null);
 
   const handleCreateBaseClick = async (name: string, size: number) => {
-    if (!authToken) {
+    if (!authToken || !selectedPlanetId) {
       setRequestMessage("No auth token found. Please log in first.");
       return;
     }
@@ -41,7 +43,7 @@ const BaseSection: React.FC<BaseSectionProps> = ({
         body: JSON.stringify({
           name,
           size,
-          planet: "6641803bb803c40a1eb88bed",
+          planet: selectedPlanetId,
           user: userID,
         }),
       });
@@ -150,6 +152,7 @@ const BaseSection: React.FC<BaseSectionProps> = ({
           handleDeleteBase={handleDeleteBase}
           onSelectBase={onSelectBase}
           selectedBaseId={selectedBaseId}
+          selectedPlanetId={selectedPlanetId}
         />
       </div>
     </section>
