@@ -238,6 +238,45 @@ const HQ: React.FC = () => {
     }
   };
 
+  const updateBuilding = async (
+    buildingId: string,
+    data: Partial<Building>
+  ) => {
+    if (!authToken || !data.queue) {
+      setRequestMessage("No auth token found. Please log in first.");
+      return;
+    }
+
+    console.log("data", data);
+    try {
+      const response = await fetch(
+        `https://api.commercegalaxy.online/buildings/${buildingId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({
+            queue: data.queue.map((r) => r._id),
+          }),
+        }
+      );
+
+      if (response.ok) {
+        setRequestMessage("Building updated successfully.");
+        console.log("Building updated successfully.");
+      } else {
+        const errorData = await response.json();
+        setRequestMessage(errorData.message || "Failed to update building.");
+        console.log(errorData.message || "Failed to update building.");
+      }
+    } catch (error) {
+      setRequestMessage("An error occurred. Please try again later.");
+      console.log("An error occurred. Please try again later.");
+    }
+  };
+
   const filteredBases = selectedPlanetId
     ? bases.filter((base) => base.planet._id === selectedPlanetId)
     : bases;
@@ -295,6 +334,7 @@ const HQ: React.FC = () => {
             recipes={recipes}
             createFabrication={startFabricating}
             buildings={buildings}
+            updateBuilding={updateBuilding}
           />
         </main>
 

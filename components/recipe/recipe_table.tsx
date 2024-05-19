@@ -3,13 +3,9 @@ import { Recipe } from "../types/recipe_type";
 
 interface RecipesTableProps {
   recipes: Recipe[];
-  createFabrication: (recipeId: string) => void;
 }
 
-const RecipesTable: React.FC<RecipesTableProps> = ({
-  recipes,
-  createFabrication,
-}) => {
+const RecipesTable: React.FC<RecipesTableProps> = ({ recipes }) => {
   return (
     <table className="min-w-full bg-gray-800 text-white">
       <thead>
@@ -22,7 +18,6 @@ const RecipesTable: React.FC<RecipesTableProps> = ({
           <th className="py-2 px-4 border-b border-gray-600">Type</th>
           <th className="py-2 px-4 border-b border-gray-600">Resource</th>
           <th className="py-2 px-4 border-b border-gray-600">Catalog</th>
-          <th className="py-2 px-4 border-b border-gray-600">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -49,14 +44,6 @@ const RecipesTable: React.FC<RecipesTableProps> = ({
             </td>
             <td className="py-2 px-4 border-b border-gray-600">
               {recipe.catalog.name}
-            </td>
-            <td className="py-2 px-4 border-b border-gray-600">
-              <button
-                onClick={() => createFabrication(recipe._id)}
-                className="px-2 py-1 bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-              >
-                Create
-              </button>
             </td>
           </tr>
         ))}
