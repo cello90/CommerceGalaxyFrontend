@@ -240,13 +240,19 @@ const HQ: React.FC = () => {
 
   const updateBuilding = async (
     buildingId: string,
-    data: Partial<Building>
+    data: {
+      queue?: string[];
+      producing?: string | null;
+      startTime?: string | null;
+    }
   ) => {
     if (!authToken || !data.queue) {
       setRequestMessage("No auth token found. Please log in first.");
       return;
     }
 
+    // Just a quick callout here, this could lead to a situation where a user could update their
+    // start time to be in the past and trigger the production of the resource early
     console.log("data", data);
     try {
       const response = await fetch(
@@ -258,7 +264,9 @@ const HQ: React.FC = () => {
             Authorization: `Bearer ${authToken}`,
           },
           body: JSON.stringify({
-            queue: data.queue.map((r) => r._id),
+            queue: data.queue,
+            producing: data.producing,
+            startTime: data.startTime,
           }),
         }
       );
