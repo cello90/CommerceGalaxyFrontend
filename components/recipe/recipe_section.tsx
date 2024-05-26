@@ -116,12 +116,14 @@ const RecipeSection: React.FC<RecipeSectionProps> = ({
   const handleDeleteCurrentRecipe = async () => {
     if (!selectedBuildingId) return;
 
+    setCurrentRecipe(null);
+    setRemainingTime(null);
+
     await updateBuilding(selectedBuildingId, {
       producing: null,
       startTime: null,
+      queue: productionQueue.map((r) => r._id),
     });
-    setCurrentRecipe(null);
-    setRemainingTime(null);
   };
 
   const moveQueueItem = async (index: number, direction: "up" | "down") => {
